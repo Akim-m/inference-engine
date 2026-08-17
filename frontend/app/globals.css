@@ -1,0 +1,177 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --font-outfit: "Outfit", sans-serif;
+  --color-accent-muted: #6b8ab0;
+}
+
+@layer base {
+  body {
+    background-color: #0a0a0f;
+    color: #ffffff;
+    font-family: var(--font-outfit);
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+/* ── Keyframes ── */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50%       { opacity: 0.65; transform: scale(1.08); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+@keyframes slide-in-left {
+  from { opacity: 0; transform: translateX(-16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes border-glow {
+  0%, 100% { border-color: #1a3a6e; }
+  50%       { border-color: #1a6fff55; }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ── Utility classes ── */
+.animate-fade-up {
+  animation: fade-up 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.5s ease both;
+}
+
+.animate-float {
+  animation: float 5s ease-in-out infinite;
+}
+
+.animate-slide-in {
+  animation: slide-in-left 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Hero radial glow */
+.hero-glow {
+  position: absolute;
+  top: -80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 700px;
+  height: 500px;
+  background: radial-gradient(ellipse at center, #1a6fff1a 0%, #0a0a0f00 70%);
+  border-radius: 50%;
+  animation: glow-pulse 6s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Shimmer CTA button */
+.btn-shimmer {
+  background: linear-gradient(90deg, #1a6fff 0%, #4d9fff 45%, #1a6fff 100%);
+  background-size: 200% auto;
+  animation: shimmer 3s linear infinite;
+  transition: filter 0.2s, transform 0.15s;
+}
+.btn-shimmer:hover {
+  filter: brightness(1.15);
+  transform: translateY(-1px);
+}
+.btn-shimmer:active {
+  transform: translateY(0);
+}
+
+/* Card hover glow */
+.card-hover {
+  transition: transform 0.2s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+.card-hover:hover {
+  transform: translateY(-3px);
+  border-color: #1a6fff55;
+  box-shadow: 0 8px 32px #1a6fff14;
+}
+
+/* Nav glass */
+.nav-glass {
+  background: rgba(10, 10, 15, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid #1a2a4a;
+}
+
+/* Orbiting light streak border on Request Access button */
+@keyframes orbit-spin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.btn-orbit {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 7px;
+  padding: 1.5px;
+  overflow: hidden;
+  background: #1a3a6e;
+}
+
+.btn-orbit::before {
+  content: '';
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  top: 50%;
+  left: 50%;
+  background: conic-gradient(from 0deg, transparent 72%, #1a3a6e 78%, #1a6fff 83%, #4d9fff 88%, #bfdbfe 91%, #4d9fff 94%, #1a6fff 97%, transparent);
+  animation: orbit-spin 2.2s linear infinite;
+}
+
+.btn-orbit-inner {
+  position: relative;
+  z-index: 1;
+  display: inline-block;
+  background: #0f1c35;
+  border-radius: 5px;
+  color: white;
+  font-weight: 600;
+  transition: background 0.2s ease;
+}
+
+.btn-orbit-inner:hover {
+  background: #152545;
+}
+
+/* Key card slide-in with stagger */
+.key-item {
+  animation: slide-in-left 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Pulsing dot for "live" indicator */
+@keyframes ping {
+  75%, 100% { transform: scale(2); opacity: 0; }
+}
+.dot-ping {
+  animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+}

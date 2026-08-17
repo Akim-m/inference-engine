@@ -1,0 +1,116 @@
+{
+  "query/dentistry/0": {
+    "raw": "ANSWER: Radiolucency around the apex of a tooth, often with a radiopaque halo.\n\nCONFIDENCE: high\n\nAdditional context: The radiopaque halo is due to the deposition of calcium and other minerals around the area of inflammation. The radiolucency represents the pus and inflammation within the periapical tissues.\n",
+    "status": "completed",
+    "structured": {
+      "answer": "Radiolucency around the apex of a tooth, often with a radiopaque halo.",
+      "confidence": "high"
+    }
+  },
+  "query/dentistry/1": {
+    "raw": "ANSWER: Advanced periodontitis is characterized by significant bone loss, attachment loss, and pocket deepening. Clinical features include:\n*   **Deep Pockets:** Pockets exceeding 6mm.\n*   **Attachment Loss:** Loss of periodontal ligament (PDL) fibers, often >4mm.\n*   **Bone Loss:** Significant alveolar bone loss, often >4mm.\n*   **Mobility:** Teeth may exhibit mobility.\n*   **Bleeding on Probing:** Persistent bleeding upon probing.\n*   **Recession:** Gingival recession exposing the root surface.\n*   **Tooth Loss:** Ultimately, teeth may be lost.\n\nCONFIDENCE: high\nAdditional Context: The severity of these features dictates the classification of periodontitis (e.g., severe, advanced). The presence of these features indicates a high risk of further progression and potential systemic health implications.\n",
+    "status": "completed",
+    "structured": null
+  },
+  "query/dentistry/2": {
+    "raw": "ANSWER: Reversible pulpitis is characterized by short-lived, mild pain or discomfort in response to stimuli (e.g., cold, sweets) that resolves quickly. Irreversible pulpitis is characterized by persistent, severe pain, often throbbing, that does not resolve with time.\n\nCONFIDENCE: high\nANSWER: The key difference lies in the duration and severity of pain. Reversible pulpitis has transient, mild pain, while irreversible pulpitis has persistent, severe pain.\n\nCONFIDENCE: high\nANSWER: Reversible pulpitis is characterized by short-lived, mild pain or discomfort in response to stimuli (e.g., cold, sweets) that resolves quickly. Irreversible pulpitis is characterized by persistent, severe pain, often throbbing, that does not resolve with time.\n\nCONFIDENCE: high\nANSWER: Reversible pulpitis is characterized by short-lived, mild pain or discomfort in response to stimuli (e.g., cold, sweets) that resolves quickly. Irreversible pulpitis is characterized by persistent, severe pain, often throbbing, that does not resolve with time.\n\nCONFIDENCE: high\nANSWER: Reversible pulpitis is characterized by short-lived, mild pain or discomfort in response to stimuli (e.g., cold, sweets) that resolves quickly. Irreversible pulpitis is characterized by persistent, severe pain, often throbbing, that does not resolve with time.\n\nCONFIDENCE: high\nANSWER: Reversible pulpitis is characterized by short-lived, mild pain or discomfort in response to stimuli (e.g., cold, sweets) that resolves quickly. Irreversible pulpitis is characterized by persistent, severe pain, often throbbing, that does not resolve with time.\n\nCONFIDENCE: high\nANSWER: Reversible pulpitis is characterized by short-lived, mild pain or discomfort in response to stimuli (e.g., cold, sweets) that resolves quickly. Irreversible pulpitis is characterized by persistent, severe pain, often throbbing, that does not resolve with time.\n\nCONFIDENCE: high\nANSWER: Reversible pulpitis is characterized by short-lived, mild pain or discomfort in response to stimuli (e.g., cold, sweets) that resolves quickly. Irreversible pulpitis is characterized by persistent, severe pain, often throbbing, that does not resolve with time.\n\nCONFIDENCE: high\nANSWER: Reversible pulpitis is characterized by short-lived, mild pain or discomfort in response to stimuli (e.g., cold, sweets) that",
+    "status": "completed",
+    "structured": {
+      "answer": "Reversible pulpitis is characterized by short-lived, mild pain or discomfort in response to stimuli (e.g., cold, sweets) that resolves quickly. Irreversible pulpitis is characterized by persistent, severe pain, often throbbing, that does not resolve with time.",
+      "confidence": "high"
+    }
+  },
+  "query/dermatology/0": {
+    "raw": "ANSWER: A, B, C, D, and E.\n\nCONFIDENCE: high\n\nA - Asymmetry: One half of the mole does not match the other half.\nB - Border: The edges are irregular, notched, or blurred.\nC - Color: The color is uneven and may include shades of black, brown, and tan.\nD - Diameter: The mole is larger than 6 millimeters (about the size of a pencil eraser).\nE - Evolving: The mole is changing in size, shape, color, or elevation, or a new symptom such as bleeding, itching, or crusting develops.\n",
+    "status": "completed",
+    "structured": {
+      "answer": "A, B, C, D, and E.",
+      "confidence": "high"
+    }
+  },
+  "query/dermatology/1": {
+    "raw": "ANSWER: A pearly or waxy bump, often with visible blood vessels. It can also present as a flat, flesh-colored or brown scar-like lesion.\n\nCONFIDENCE: high\nAdditional context: Basal cell carcinoma (BCC) is the most common type of skin cancer. The presentation can vary, but the above are the most typical. Early detection is crucial for successful treatment.\n",
+    "status": "completed",
+    "structured": {
+      "answer": "A pearly or waxy bump, often with visible blood vessels. It can also present as a flat, flesh-colored or brown scar-like lesion.",
+      "confidence": "high"
+    }
+  },
+  "query/dermatology/2": {
+    "raw": "ANSWER: Eczema typically presents with pruritus (itching), often with a history of atopy (asthma, allergic rhinitis, or atopic dermatitis). Lesions are often less scaly and more erythematous (red) with possible weeping or crusting. Psoriasis is often more scaly, with silvery-white plaques, and may be associated with a family history of psoriasis.\n\nCONFIDENCE: high\n",
+    "status": "completed",
+    "structured": {
+      "answer": "Eczema typically presents with pruritus (itching), often with a history of atopy (asthma, allergic rhinitis, or atopic dermatitis). Lesions are often less scaly and more erythematous (red) with possible weeping or crusting. Psoriasis is often more scaly, with silvery-white plaques, and may be associated with a family history of psoriasis.",
+      "confidence": "high"
+    }
+  },
+  "query/ophthalmology/0": {
+    "raw": "ANSWER: Microaneurysms, hemorrhages, exudates, neovascularization, and optic disc edema.\n\nCONFIDENCE: high\n\nAdditional context: These findings are often graded based on severity (e.g., mild, moderate, severe) to assess the progression of the disease. The presence and extent of these signs are crucial for determining the appropriate treatment strategy.\n",
+    "status": "completed",
+    "structured": {
+      "answer": "Microaneurysms, hemorrhages, exudates, neovascularization, and optic disc edema.",
+      "confidence": "high"
+    }
+  },
+  "query/ophthalmology/1": {
+    "raw": "ANSWER: Optic disc cupping (enlargement of the optic cup relative to the optic disc) and/or pallor (loss of normal color) of the optic nerve head.\n\nCONFIDENCE: high\n\nAdditional context: The specific pattern of optic disc changes can vary depending on the type of glaucoma (e.g., open-angle, angle-closure, normal-tension). Early glaucomatous damage may be subtle and require specialized imaging techniques like OCT (optical coherence tomography) for detection.\n",
+    "status": "completed",
+    "structured": {
+      "answer": "Optic disc cupping (enlargement of the optic cup relative to the optic disc) and/or pallor (loss of normal color) of the optic nerve head.",
+      "confidence": "high"
+    }
+  },
+  "query/ophthalmology/2": {
+    "raw": "ANSWER: Sudden, painless, monocular vision loss.\nCONFIDENCE: high\n\nAdditional context: The vision loss is typically profound and can be described as a \"curtain coming down\" over the eye. Fundoscopic examination usually reveals a \"cherry-red spot\" in the macula and retinal whitening.\n",
+    "status": "completed",
+    "structured": {
+      "answer": "Sudden, painless, monocular vision loss.",
+      "confidence": "high"
+    }
+  },
+  "query/pathology/0": {
+    "raw": "ANSWER: Malignant tumors are characterized by uncontrolled cell proliferation, loss of differentiation, and invasion of surrounding tissues. Key histological features include:\n\n*   **Increased cellularity:** A higher number of cells per unit volume compared to normal tissue.\n*   **Loss of cellular differentiation:** Cells lose their specialized appearance and function, often resembling less mature or more mature cells than their normal counterparts.\n*   **Increased mitotic activity:** A higher rate of cell division, indicated by the presence of multiple mitotic figures.\n*   **Necrosis:** Cell death, often associated with areas of tissue destruction.\n*   **Invasion and metastasis:** The ability of tumor cells to infiltrate adjacent tissues and spread to distant sites (metastasis).\n*   **Abnormal vascularity:** Increased blood vessel formation (angiogenesis) to support tumor growth.\n*   **Presence of atypical cells:** Cells with abnormal size, shape, and nuclear features.\n\nCONFIDENCE: high\nANSWER: Malignant tumors are characterized by uncontrolled cell proliferation, loss of differentiation, and invasion of surrounding tissues. Key histological features include:\n\n*   **Increased cellularity:** A higher number of cells per unit volume compared to normal tissue.\n*   **Loss of cellular differentiation:** Cells lose their specialized appearance and function, often resembling less mature or more mature cells than their normal counterparts.\n*   **Increased mitotic activity:** A higher rate of cell division, indicated by the presence of multiple mitotic figures.\n*   **Necrosis:** Cell death, often associated with areas of tissue destruction.\n*   **Invasion and metastasis:** The ability of tumor cells to infiltrate adjacent tissues and spread to distant sites (metastasis).\n*   **Abnormal vascularity:** Increased blood vessel formation (angiogenesis) to support tumor growth.\n*   **Presence of atypical cells:** Cells with abnormal size, shape, and nuclear features.\n\nCONFIDENCE: high\nANSWER: Malignant tumors are characterized by uncontrolled cell proliferation, loss of differentiation, and invasion of surrounding tissues. Key histological features include:\n\n*   **Increased cellularity:** A higher number of cells per unit volume compared to normal tissue.\n*   **Loss of cellular differentiation:** Cells lose their specialized appearance and function, often resembling less mature or more mature cells than their normal counterparts.\n*   **Increased mitotic activity:** A higher rate of cell division, indicated by the presence of multiple mitotic figures.\n*   **Necrosis:** Cell death, often associated with areas of tissue destruction.\n*",
+    "status": "completed",
+    "structured": null
+  },
+  "query/pathology/1": {
+    "raw": "ANSWER: A caseating granuloma is characterized by a central area of necrosis (caseation) surrounded by a rim of lymphocytes and macrophages. The caseous necrosis is typically cheese-like in appearance, with amorphous, eosinophilic (pink) material.\n\nCONFIDENCE: high\n",
+    "status": "completed",
+    "structured": {
+      "answer": "A caseating granuloma is characterized by a central area of necrosis (caseation) surrounded by a rim of lymphocytes and macrophages. The caseous necrosis is typically cheese-like in appearance, with amorphous, eosinophilic (pink) material.",
+      "confidence": "high"
+    }
+  },
+  "query/pathology/2": {
+    "raw": "ANSWER: Increased intraepithelial lymphocytes (IELs) and crypt hyperplasia.\n\nCONFIDENCE: high\n\nAdditional context: The Marsh classification is used to grade the severity of histological changes in coeliac disease. The characteristic histopathology is increased IELs (typically >25 IELs per 100 enterocytes) and crypt hyperplasia. Other features may include villous atrophy, crypt distortion, and increased lamina propria cellularity.\n",
+    "status": "completed",
+    "structured": {
+      "answer": "Increased intraepithelial lymphocytes (IELs) and crypt hyperplasia.",
+      "confidence": "high"
+    }
+  },
+  "query/radiology/0": {
+    "raw": "ANSWER: Increased opacity in the affected hemithorax, mediastinal shift to the opposite side, and absent breath sounds on the affected side.\n\nCONFIDENCE: high\n\nAdditional context: These findings are often accompanied by tracheal deviation away from the affected side. A tension pneumothorax is a life-threatening condition requiring immediate intervention.\n",
+    "status": "completed",
+    "structured": {
+      "answer": "Increased opacity in the affected hemithorax, mediastinal shift to the opposite side, and absent breath sounds on the affected side.",
+      "confidence": "high"
+    }
+  },
+  "query/radiology/1": {
+    "raw": "ANSWER: The silhouette sign indicates the presence of a mass or consolidation within the lung parenchyma, obscuring the underlying structures.\n\nCONFIDENCE: high\n",
+    "status": "completed",
+    "structured": {
+      "answer": "The silhouette sign indicates the presence of a mass or consolidation within the lung parenchyma, obscuring the underlying structures.",
+      "confidence": "high"
+    }
+  },
+  "query/radiology/2": {
+    "raw": "ANSWER: Consolidation, air bronchograms, pleural effusion (less common), and possibly a meniscus sign.\n\nCONFIDENCE: high\n\nAdditional context: Consolidation is the most characteristic finding. Air bronchograms are seen when air-filled bronchi are visible within consolidated lung tissue. Pleural effusion can occur, especially in complicated cases. The meniscus sign is a curved pleural line seen on lateral chest radiographs, often associated with a large pleural effusion.\n",
+    "status": "completed",
+    "structured": {
+      "answer": "Consolidation, air bronchograms, pleural effusion (less common), and possibly a meniscus sign.",
+      "confidence": "high"
+    }
+  }
+}

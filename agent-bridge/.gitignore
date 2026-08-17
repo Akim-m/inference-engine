@@ -1,0 +1,6 @@
+# Shared secret — never commit
+bridge.env
+
+# Runtime state — transcript and per-agent read cursors
+relay-log.jsonl
+.cursor-*

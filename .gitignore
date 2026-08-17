@@ -1,0 +1,19 @@
+.env
+.superpowers/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+sample.py
+docs/.superpowers/
+submit_job.py
+poll_job.py/.superpowers/
+finetune/
+# Job temp artifacts (image bytes written under TEMP_DIR); never commit
+*.img
+logs/

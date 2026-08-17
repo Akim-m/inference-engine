@@ -1,0 +1,101 @@
+services:
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+
+  vllm:
+    # PIN to a tag verified to serve MedGemma-4B (Gemma-3 multimodal) with image_url
+    # inputs before first real run — :latest is non-reproducible and may not support it.
+    image: vllm/vllm-openai:latest
+    # Flags are tuned to fit MedGemma-4B (fp8) on an 8 GB GPU. Memory budget, context,
+    # and concurrency are env-overridable so cloud/larger GPUs can raise them.
+    # --enforce-eager skips CUDA-graph capture (saves VRAM); --no-enable-prefix-caching
+    # is pointless when every request carries a unique inline image; --limit-mm-per-prompt
+    # caps multimodal profiling at the 1 image the API actually sends. Uses list form so
+    # the JSON arg survives (folded-string commands get whitespace-split by Compose).
+    command:
+      - --model
+      - "${MODEL_ID:-google/medgemma-4b-it}"
+      - --served-model-name
+      - "${MODEL_ID:-google/medgemma-4b-it}"
+      - --port
+      - "8001"
+      - --quantization
+      - "${QUANTIZATION:-fp8}"
+      - --max-model-len
+      - "${MAX_MODEL_LEN:-2048}"
+      - --gpu-memory-utilization
+      - "${GPU_MEMORY_UTILIZATION:-0.85}"
+      - --max-num-seqs
+      - "${MAX_NUM_SEQS:-4}"
+      - --enforce-eager
+      - --no-enable-prefix-caching
+      - --limit-mm-per-prompt
+      - '{"image": 1}'
+    env_file: .env
+    environment:
+      HUGGING_FACE_HUB_TOKEN: ${HF_TOKEN}
+      # Native PyTorch sampler; the FlashInfer sampler JIT-compiles a kernel at startup
+      # that can fail in minimal CUDA runtimes. Greedy (temperature=0) is unaffected.
+      VLLM_USE_FLASHINFER_SAMPLER: "0"
+    ports:
+      - "8001:8001"
+    volumes:
+      - hf_cache:/root/.cache/huggingface
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8001/health').status==200 else 1)"]
+      interval: 15s
+      timeout: 5s
+      retries: 20
+      start_period: 600s
+    restart: unless-stopped
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    env_file: .env
+    environment:
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      - redis
+    restart: unless-stopped
+    volumes:
+      - temp_data:/tmp/troke
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    command: python -m worker.start
+    env_file: .env
+    environment:
+      REDIS_URL: redis://redis:6379
+      VLLM_URL: http://vllm:8001/v1
+    depends_on:
+      redis:
+        condition: service_started
+      vllm:
+        condition: service_healthy
+    restart: unless-stopped
+    volumes:
+      - temp_data:/tmp/troke
+    deploy:
+      replicas: 4
+
+volumes:
+  redis_data:
+  temp_data:
+  hf_cache:

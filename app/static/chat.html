@@ -1,0 +1,690 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>troke — clinical assistant</title>
+  <style>
+    :root {
+      --bg: #f5f6f8; --surface: #ffffff; --ink: #16202e; --muted: #64707e;
+      --line: #e6e9ee; --line-strong: #d6dbe2;
+      --accent: #0e7a6b; --accent-ink: #0a5c50; --accent-soft: #e6f3f0;
+      --user-bg: #0e7a6b; --user-ink: #ffffff;
+      --warn-bg: #fdf4e7; --warn-ink: #8a5a15;
+      --err-bg: #fbeceb; --err-ink: #a3271c;
+      --shadow: 0 1px 2px rgba(16,32,46,.04), 0 8px 24px rgba(16,32,46,.06);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0f141b; --surface: #161c26; --ink: #e8ecf2; --muted: #94a1b2;
+        --line: #253040; --line-strong: #2f3b4d;
+        --accent: #35b39d; --accent-ink: #4cc7b1; --accent-soft: #14312c;
+        --user-bg: #1f7d6e; --user-ink: #f2fbf9;
+        --warn-bg: #2c2413; --warn-ink: #e6c583;
+        --err-bg: #33191a; --err-ink: #f0a59c;
+        --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+      }
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body {
+      background: var(--bg); color: var(--ink);
+      font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      display: flex; flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ---- Header ---- */
+    header {
+      display: flex; align-items: center; gap: 14px;
+      padding: 12px 20px; border-bottom: 1px solid var(--line);
+      background: var(--surface);
+    }
+    .brand { display: flex; align-items: baseline; gap: 9px; margin-right: auto; }
+    .logo {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 23px; font-weight: 700; letter-spacing: -.01em; color: var(--ink);
+    }
+    .logo .dot { color: var(--accent); }
+    .tag { color: var(--muted); font-size: 13px; display: none; }
+    @media (min-width: 560px) { .tag { display: inline; } }
+    .dept-wrap { position: relative; display: flex; align-items: center; }
+    #dept {
+      appearance: none; -webkit-appearance: none;
+      background: var(--surface); color: var(--ink);
+      border: 1px solid var(--line-strong); border-radius: 10px;
+      padding: 9px 32px 9px 12px; font: inherit; font-size: 14px; font-weight: 500;
+      cursor: pointer; max-width: 190px;
+    }
+    .dept-wrap::after {
+      content: ""; position: absolute; right: 12px; pointer-events: none;
+      width: 8px; height: 8px; border-right: 2px solid var(--muted);
+      border-bottom: 2px solid var(--muted); transform: translateY(-2px) rotate(45deg);
+    }
+    .newchat {
+      cursor: pointer; padding: 9px 14px; border-radius: 10px; white-space: nowrap;
+      background: var(--surface); border: 1px solid var(--line-strong); color: var(--ink);
+      font: inherit; font-size: 14px; font-weight: 500;
+    }
+    .newchat:hover { border-color: var(--accent); color: var(--accent-ink); }
+    #dept:focus-visible, .newchat:focus-visible, .attach:focus-within, #q:focus-visible, #send:focus-visible {
+      outline: 2px solid var(--accent); outline-offset: 2px;
+    }
+
+    .disclaimer {
+      background: var(--warn-bg); color: var(--warn-ink); font-size: 12.5px;
+      padding: 7px 20px; text-align: center; border-bottom: 1px solid var(--line);
+    }
+
+    /* ---- Conversation ---- */
+    #log {
+      flex: 1; overflow-y: auto; padding: 26px 20px 8px;
+      display: flex; flex-direction: column; gap: 22px;
+      width: 100%; max-width: 780px; margin: 0 auto;
+    }
+    .empty {
+      margin: auto; text-align: center; color: var(--muted); max-width: 440px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .empty .mark {
+      font-family: Georgia, serif; font-size: 40px; color: var(--accent);
+      line-height: 1;
+    }
+    .empty h1 { font-size: 20px; color: var(--ink); margin: 0; font-weight: 600; }
+    .empty p { margin: 0; font-size: 14.5px; }
+
+    .turn { display: flex; flex-direction: column; }
+    .turn.user { align-items: flex-end; }
+    .role {
+      font-size: 12px; font-weight: 600; letter-spacing: .02em;
+      color: var(--muted); margin-bottom: 6px; text-transform: uppercase;
+    }
+    .turn.user .role { color: var(--accent-ink); }
+
+    .bubble { max-width: 88%; }
+    .user .bubble {
+      background: var(--user-bg); color: var(--user-ink);
+      padding: 11px 15px; border-radius: 16px 16px 4px 16px;
+      white-space: pre-wrap; word-wrap: break-word; font-size: 15.5px;
+    }
+    .user .bubble img.thumb {
+      display: block; max-width: 240px; width: 100%; border-radius: 10px;
+      margin-bottom: 8px;
+    }
+    /* bot answers render as clean clinical notes, full readable width */
+    .bot .bubble { max-width: 100%; color: var(--ink); }
+    .bot.error .bubble {
+      background: var(--err-bg); color: var(--err-ink); padding: 11px 15px;
+      border-radius: 12px; border: 1px solid var(--err-ink);
+    }
+    .thinking { color: var(--muted); display: inline-flex; align-items: center; gap: 8px; }
+    .dots span {
+      width: 6px; height: 6px; border-radius: 50%; background: var(--muted);
+      display: inline-block; animation: blink 1.4s infinite both;
+    }
+    .dots span:nth-child(2) { animation-delay: .2s; }
+    .dots span:nth-child(3) { animation-delay: .4s; }
+    @keyframes blink { 0%, 80%, 100% { opacity: .25; } 40% { opacity: 1; } }
+    @media (prefers-reduced-motion: reduce) { .dots span { animation: none; } }
+
+    /* rendered markdown inside a bot bubble */
+    .md > :first-child { margin-top: 0; }
+    .md > :last-child { margin-bottom: 0; }
+    .md p { margin: 0 0 12px; }
+    .md h2 {
+      font-size: 15px; font-weight: 700; color: var(--accent-ink);
+      margin: 20px 0 8px; padding-bottom: 4px; border-bottom: 1px solid var(--line);
+      letter-spacing: .01em;
+    }
+    .md h3 { font-size: 14.5px; font-weight: 700; color: var(--ink); margin: 16px 0 6px; }
+    .md h4 { font-size: 14px; font-weight: 600; color: var(--muted); margin: 14px 0 6px; }
+    .md ul, .md ol { margin: 0 0 12px; padding-left: 22px; }
+    .md li { margin: 3px 0; }
+    .md ul li::marker { color: var(--accent); }
+    .md strong { font-weight: 700; }
+    .md code {
+      font: 13px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+      background: var(--accent-soft); color: var(--accent-ink);
+      padding: 2px 5px; border-radius: 5px;
+    }
+    .md hr { border: 0; border-top: 1px solid var(--line); margin: 16px 0; }
+
+    /* ---- Composer ---- */
+    .composer-wrap {
+      border-top: 1px solid var(--line); background: var(--surface);
+      padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+    }
+    .composer {
+      max-width: 780px; margin: 0 auto;
+      display: flex; align-items: flex-end; gap: 10px;
+      background: var(--surface); border: 1.5px solid var(--line-strong);
+      border-radius: 16px; padding: 8px 8px 8px 12px;
+      box-shadow: var(--shadow);
+      transition: border-color .15s;
+    }
+    .composer:focus-within { border-color: var(--accent); }
+    .attach {
+      flex: 0 0 auto; cursor: pointer; display: grid; place-items: center;
+      width: 40px; height: 40px; border-radius: 10px; color: var(--muted);
+      border: 1px solid transparent;
+    }
+    .attach:hover { background: var(--accent-soft); color: var(--accent-ink); }
+    .attach.has-file { color: var(--accent); }
+    .attach svg { width: 21px; height: 21px; }
+    #q {
+      flex: 1; resize: none; border: 0; outline: none; background: transparent;
+      color: var(--ink); font: inherit; font-size: 16px; line-height: 1.5;
+      padding: 10px 4px; min-height: 44px; max-height: 220px;
+    }
+    #q::placeholder { color: var(--muted); }
+    #send {
+      flex: 0 0 auto; display: grid; place-items: center;
+      width: 44px; height: 44px; border-radius: 12px; border: 0; cursor: pointer;
+      background: var(--accent); color: #fff;
+    }
+    #send:hover { background: var(--accent-ink); }
+    #send:disabled { opacity: .4; cursor: default; }
+    #send svg { width: 20px; height: 20px; }
+    .filechip {
+      max-width: 780px; margin: 0 auto; width: 100%;
+      font-size: 13px; color: var(--muted); padding: 8px 4px 0;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .filechip button {
+      background: none; border: 0; color: var(--accent-ink); cursor: pointer;
+      font: inherit; text-decoration: underline;
+    }
+    .hint { max-width: 780px; margin: 6px auto 0; text-align: center; color: var(--muted); font-size: 11.5px; }
+
+    /* ---- Status bar (model readiness + warmup progress + stats toggle) ---- */
+    .statusbar {
+      display: flex; align-items: center; gap: 10px;
+      padding: 6px 20px; font-size: 12.5px; color: var(--muted);
+      background: var(--surface); border-bottom: 1px solid var(--line);
+    }
+    .dotind { width: 9px; height: 9px; border-radius: 50%; background: var(--muted); flex: 0 0 auto; }
+    .dotind.ready { background: #1eb980; box-shadow: 0 0 0 3px rgba(30,185,128,.18); }
+    .dotind.warm { background: #e0a11a; animation: pulse 1.3s infinite; }
+    .dotind.down { background: #d9534f; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+    @media (prefers-reduced-motion: reduce) { .dotind.warm { animation: none; } }
+    #statustext { flex: 0 0 auto; }
+    .progress { flex: 1; height: 5px; max-width: 240px; border-radius: 999px; background: var(--line); overflow: hidden; }
+    .progress[hidden] { display: none; }
+    .progfill {
+      height: 100%; width: 0%; border-radius: 999px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-ink));
+      transition: width .4s ease;
+    }
+    .statsbtn {
+      margin-left: auto; cursor: pointer; font: inherit; font-size: 12.5px;
+      background: var(--surface); color: var(--muted);
+      border: 1px solid var(--line-strong); border-radius: 8px; padding: 4px 10px;
+    }
+    .statsbtn:hover { color: var(--accent-ink); border-color: var(--accent); }
+    .statsbtn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    /* ---- Stats panel ---- */
+    .statspanel {
+      position: fixed; top: 108px; right: 16px; z-index: 40; width: 262px;
+      background: var(--surface); border: 1px solid var(--line-strong);
+      border-radius: 14px; box-shadow: var(--shadow); padding: 14px 16px;
+      font-size: 13px; color: var(--ink);
+    }
+    .statspanel[hidden] { display: none; }
+    .statspanel h3 { margin: 0 0 4px; font-size: 13px; color: var(--accent-ink); letter-spacing: .02em; }
+    .statspanel .sub { margin: 0 0 10px; font-size: 11.5px; color: var(--muted); }
+    .statrow { display: flex; justify-content: space-between; gap: 12px; padding: 4px 0; border-top: 1px solid var(--line); }
+    .statrow:first-of-type { border-top: 0; }
+    .statrow span:first-child { color: var(--muted); }
+    .statrow span:last-child { font-variant-numeric: tabular-nums; font-weight: 600; }
+
+    /* streaming bubble: plain text with a caret while tokens arrive */
+    .bot .bubble.streaming { white-space: pre-wrap; word-wrap: break-word; font-size: 15.5px; }
+    .bot .bubble.streaming::after {
+      content: "▋"; color: var(--accent); margin-left: 1px; animation: blink 1s step-end infinite;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <span class="brand">
+      <span class="logo">troke<span class="dot">.</span></span>
+      <span class="tag">clinical assistant</span>
+    </span>
+    <span class="dept-wrap">
+      <select id="dept" title="Department" aria-label="Department">
+        <option value="general" selected>General</option>
+      </select>
+    </span>
+    <button type="button" id="newchat" class="newchat" title="Start a fresh conversation">New chat</button>
+  </header>
+
+  <div class="disclaimer">
+    Research demo — <strong>not for clinical use</strong>. Don't upload real patient data; AI can be wrong.
+  </div>
+
+  <div class="statusbar" id="statusbar">
+    <span class="dotind warm" id="dotind"></span>
+    <span id="statustext">Checking model…</span>
+    <div class="progress" id="progress"><div class="progfill" id="progfill"></div></div>
+    <button type="button" id="statsBtn" class="statsbtn" title="Show response speed &amp; stats" aria-expanded="false">⚡ Stats</button>
+  </div>
+
+  <div class="statspanel" id="statspanel" hidden>
+    <h3>Response speed</h3>
+    <p class="sub" id="statsmodel">MedGemma-4B · fp8</p>
+    <div id="statsbody"><div class="statrow"><span>No responses yet</span><span></span></div></div>
+  </div>
+
+  <div id="log">
+    <div class="empty" id="empty">
+      <span class="mark">℞</span>
+      <h1>Ask a medical question</h1>
+      <p>Pick a department, type a question, or attach an image (X-ray, skin photo, slide, scan) and ask about it.</p>
+    </div>
+  </div>
+
+  <div class="filechip" id="filechip" hidden></div>
+
+  <div class="composer-wrap">
+    <form id="form" class="composer">
+      <label class="attach" id="attach" title="Attach an image">
+        <input type="file" id="file" accept="image/*,.dcm,application/dicom" hidden />
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+      </label>
+      <textarea id="q" rows="1" placeholder="Message troke…" aria-label="Your message"></textarea>
+      <button id="send" type="submit" title="Send" aria-label="Send">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+      </button>
+    </form>
+    <div class="hint">troke can make mistakes. Verify important medical information.</div>
+  </div>
+
+  <script>
+    const API = window.location.origin;
+    const MAX_BYTES = 25 * 1024 * 1024;   // accept high-res originals; we downscale before upload
+    const POLL_MS = 2000;
+    const POLL_MAX = 120;                  // ~4 minutes
+    const IMG_MAX_DIM = 1280;              // downscale target (MedGemma downscales internally anyway)
+
+    const log = document.getElementById("log");
+    const form = document.getElementById("form");
+    const q = document.getElementById("q");
+    const fileInput = document.getElementById("file");
+    const attach = document.getElementById("attach");
+    const filechip = document.getElementById("filechip");
+    const sendBtn = document.getElementById("send");
+    const newchat = document.getElementById("newchat");
+    const dept = document.getElementById("dept");
+    const dotind = document.getElementById("dotind");
+    const statustext = document.getElementById("statustext");
+    const progress = document.getElementById("progress");
+    const progfill = document.getElementById("progfill");
+    const statsBtn = document.getElementById("statsBtn");
+    const statspanel = document.getElementById("statspanel");
+    const statsbody = document.getElementById("statsbody");
+
+    const EMPTY_HTML =
+      '<div class="empty" id="empty"><span class="mark">℞</span>' +
+      '<h1>Ask a medical question</h1><p>Pick a department, type a question, or attach an ' +
+      'image (X-ray, skin photo, slide, scan) and ask about it.</p></div>';
+
+    /* ---- Department dropdown (from the live domain list) ---- */
+    (async () => {
+      try {
+        const r = await fetch(API + "/chat/api/domains");
+        const { domains } = await r.json();
+        if (Array.isArray(domains) && domains.length) {
+          dept.innerHTML = "";
+          for (const d of domains) {
+            const o = document.createElement("option");
+            o.value = d;
+            o.textContent = d.charAt(0).toUpperCase() + d.slice(1);
+            if (d === "general") o.selected = true;
+            dept.appendChild(o);
+          }
+        }
+      } catch { /* keep the inline General option */ }
+    })();
+
+    /* ---- Conversation id (server-side memory, per tab) ---- */
+    const CONV_KEY = "troke_conversation_id";
+    function conversationId() {
+      let id = sessionStorage.getItem(CONV_KEY);
+      if (!id) { id = crypto.randomUUID(); sessionStorage.setItem(CONV_KEY, id); }
+      return id;
+    }
+
+    /* ---- Minimal, safe Markdown renderer (escape first, then format) ---- */
+    function renderMarkdown(src) {
+      const esc = (s) => s.replace(/[&<>"']/g, (c) =>
+        ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+      const inline = (s) => esc(s)
+        .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+        .replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, "$1<em>$2</em>")
+        .replace(/`([^`]+)`/g, "<code>$1</code>");
+      const lines = src.replace(/\r/g, "").split("\n");
+      let html = "", i = 0;
+      const isUL = (l) => /^\s*[-*+]\s+/.test(l);
+      const isOL = (l) => /^\s*\d+[.)]\s+/.test(l);
+      const isH = (l) => /^#{1,4}\s+/.test(l);
+      const isHR = (l) => /^\s*([-*_])\1{2,}\s*$/.test(l);
+      while (i < lines.length) {
+        const line = lines[i];
+        if (/^\s*$/.test(line)) { i++; continue; }
+        const h = line.match(/^(#{1,4})\s+(.*)$/);
+        if (h) { const lvl = Math.min(h[1].length + 1, 4); html += `<h${lvl}>${inline(h[2])}</h${lvl}>`; i++; continue; }
+        if (isHR(line)) { html += "<hr>"; i++; continue; }
+        if (isUL(line)) {
+          html += "<ul>";
+          while (i < lines.length && isUL(lines[i])) { html += `<li>${inline(lines[i].replace(/^\s*[-*+]\s+/, ""))}</li>`; i++; }
+          html += "</ul>"; continue;
+        }
+        if (isOL(line)) {
+          html += "<ol>";
+          while (i < lines.length && isOL(lines[i])) { html += `<li>${inline(lines[i].replace(/^\s*\d+[.)]\s+/, ""))}</li>`; i++; }
+          html += "</ol>"; continue;
+        }
+        const para = [];
+        while (i < lines.length && !/^\s*$/.test(lines[i]) && !isH(lines[i]) && !isUL(lines[i]) && !isOL(lines[i]) && !isHR(lines[i])) {
+          para.push(lines[i]); i++;
+        }
+        html += `<p>${para.map(inline).join("<br>")}</p>`;
+      }
+      return html;
+    }
+
+    /* ---- Downscale an image in-browser before upload (fixes slow-tunnel timeouts) ---- */
+    async function downscaleImage(file) {
+      try {
+        const url = URL.createObjectURL(file);
+        const img = await new Promise((res, rej) => {
+          const im = new Image();
+          im.onload = () => res(im); im.onerror = rej; im.src = url;
+        });
+        const scale = Math.min(1, IMG_MAX_DIM / Math.max(img.width, img.height));
+        const w = Math.max(1, Math.round(img.width * scale));
+        const h = Math.max(1, Math.round(img.height * scale));
+        const canvas = document.createElement("canvas");
+        canvas.width = w; canvas.height = h;
+        canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+        URL.revokeObjectURL(url);
+        const blob = await new Promise((res) => canvas.toBlob(res, "image/jpeg", 0.85));
+        return blob || file;
+      } catch { return file; }  // fall back to the original if anything fails
+    }
+
+    /* ---- Messages ---- */
+    function clearEmpty() { const e = document.getElementById("empty"); if (e) e.remove(); }
+    function scrollDown() { log.scrollTop = log.scrollHeight; }
+
+    function addUser(text, thumbUrl, isDicom) {
+      clearEmpty();
+      const wrap = document.createElement("div");
+      wrap.className = "turn user";
+      wrap.innerHTML = '<div class="role">You</div><div class="bubble"></div>';
+      const bubble = wrap.querySelector(".bubble");
+      if (isDicom) {
+        const chip = document.createElement("div");
+        chip.textContent = "🩻 DICOM image";
+        chip.style.cssText = "margin-bottom:8px;font-size:13px;opacity:.9;";
+        bubble.appendChild(chip);
+      } else if (thumbUrl) {
+        const img = document.createElement("img");
+        img.className = "thumb"; img.src = thumbUrl; img.alt = "attached image";
+        bubble.appendChild(img);
+      }
+      bubble.appendChild(document.createTextNode(text));
+      log.appendChild(wrap); scrollDown();
+    }
+
+    function addBot() {
+      clearEmpty();
+      const wrap = document.createElement("div");
+      wrap.className = "turn bot";
+      wrap.innerHTML = '<div class="role">troke</div>' +
+        '<div class="bubble"><span class="thinking">thinking<span class="dots"><span></span><span></span><span></span></span>' +
+        '<span class="elapsed" style="margin-left:8px;opacity:.7;font-variant-numeric:tabular-nums"></span></span></div>';
+      log.appendChild(wrap); scrollDown();
+      const t0 = performance.now();
+      wrap._timer = setInterval(() => {
+        const el = wrap.querySelector(".elapsed");
+        if (!el) { clearInterval(wrap._timer); return; }
+        el.textContent = Math.round((performance.now() - t0) / 1000) + "s";
+      }, 1000);
+      return wrap;
+    }
+    function stopThinking(wrap) { if (wrap && wrap._timer) { clearInterval(wrap._timer); wrap._timer = null; } }
+    function fillBot(wrap, text) {
+      stopThinking(wrap);
+      const bubble = wrap.querySelector(".bubble");
+      bubble.className = "bubble md";
+      bubble.innerHTML = renderMarkdown(text);
+      scrollDown();
+    }
+    function errorBot(wrap, msg) {
+      stopThinking(wrap);
+      wrap.classList.add("error");
+      const bubble = wrap.querySelector(".bubble");
+      bubble.className = "bubble"; bubble.textContent = msg;
+      scrollDown();
+    }
+
+    /* ---- File select (images + DICOM) ---- */
+    function isDicomFile(f) { return /\.dcm$/i.test(f.name) || f.type === "application/dicom"; }
+    fileInput.addEventListener("change", () => {
+      const f = fileInput.files[0];
+      if (!f) { clearFile(); return; }
+      const dicom = isDicomFile(f);
+      if (!/^image\//.test(f.type) && !dicom) { alert("Please choose an image or a DICOM (.dcm) file."); clearFile(); return; }
+      if (f.size > MAX_BYTES) { alert("That file is too large (max 25 MB)."); clearFile(); return; }
+      attach.classList.add("has-file");
+      filechip.hidden = false;
+      filechip.innerHTML = "";
+      const name = document.createElement("span");
+      name.textContent = (dicom ? "🩻 " : "📎 ") + f.name + (dicom ? "  ·  DICOM → converted on upload" : "");
+      const rm = document.createElement("button");
+      rm.type = "button"; rm.textContent = "remove"; rm.onclick = clearFile;
+      filechip.append(name, rm);
+    });
+    function clearFile() {
+      fileInput.value = "";
+      attach.classList.remove("has-file");
+      filechip.hidden = true; filechip.innerHTML = "";
+    }
+
+    /* ---- Submit + poll ---- */
+    function friendlyError(status, body) {
+      if (status === 503) return "Chat isn't enabled on this server right now.";
+      if (status === 429) return "The server is busy — please wait a moment and try again.";
+      if (status === 422 && body && body.error === "invalid_file") return "That file couldn't be read. Try a JPEG, PNG, or DICOM (.dcm).";
+      return (body && body.message) || ("Something went wrong (" + status + ").");
+    }
+
+    async function submitJob(text, file) {
+      let resp;
+      if (file) {
+        const fd = new FormData();
+        if (isDicomFile(file)) {
+          // DICOM can't be drawn on a canvas — send the raw .dcm; the server transcodes it.
+          fd.append("image", file, file.name || "upload.dcm");
+        } else {
+          const blob = await downscaleImage(file);
+          fd.append("image", blob, "upload.jpg");
+        }
+        fd.append("question", text);
+        fd.append("conversation_id", conversationId());
+        fd.append("domain", dept.value);
+        resp = await fetch(API + "/chat/api/analyze", { method: "POST", body: fd });
+      } else {
+        resp = await fetch(API + "/chat/api/query", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question: text, conversation_id: conversationId(), domain: dept.value }),
+        });
+      }
+      if (!resp.ok) {
+        const body = await resp.json().catch(() => ({}));
+        throw new Error(friendlyError(resp.status, body));
+      }
+      return (await resp.json()).job_id;
+    }
+
+    async function pollResult(jobId) {
+      for (let i = 0; i < POLL_MAX; i++) {
+        await new Promise((r) => setTimeout(r, POLL_MS));
+        let resp;
+        try { resp = await fetch(API + "/chat/api/jobs/" + jobId); }
+        catch { continue; }              // transient tunnel/network blip — keep polling
+        if (!resp.ok) continue;
+        const data = await resp.json().catch(() => null);
+        if (!data) continue;
+        if (data.status === "completed") {
+          const r = data.result || {};
+          return { text: r.raw || "(empty response)", stats: r.stats || null };
+        }
+        if (data.status === "failed") throw new Error("Analysis failed. Please try again.");
+      }
+      throw new Error("This is taking longer than expected — please try again.");
+    }
+
+    /* ---- Live token stream (SSE). Falls back to polling if unsupported/dropped. ---- */
+    function streamResult(jobId, botTurn) {
+      return new Promise((resolve, reject) => {
+        if (!window.EventSource) { reject(new Error("no_sse")); return; }
+        const bubble = botTurn.querySelector(".bubble");
+        const es = new EventSource(API + "/chat/api/stream/" + jobId);
+        let acc = "", started = false, settled = false;
+        const finish = (fn, arg) => { if (settled) return; settled = true; es.close(); fn(arg); };
+        es.onmessage = (e) => {
+          let obj; try { obj = JSON.parse(e.data); } catch { return; }
+          if (obj.t === "delta") {
+            if (!started) { started = true; stopThinking(botTurn); bubble.className = "bubble streaming"; bubble.textContent = ""; }
+            acc += obj.text; bubble.textContent = acc; scrollDown();
+          } else if (obj.t === "done") {
+            finish(resolve, { text: acc, stats: obj.stats || null });
+          } else if (obj.t === "error") {
+            finish(reject, new Error("stream_error"));
+          }
+        };
+        es.onerror = () => finish(reject, new Error(acc ? "stream_dropped" : "stream_unavailable"));
+      });
+    }
+
+    /* ---- Textarea autosize + submit ---- */
+    function autosize() { q.style.height = "auto"; q.style.height = Math.min(q.scrollHeight, 220) + "px"; }
+    q.addEventListener("input", autosize);
+    q.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); form.requestSubmit(); }
+    });
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const text = q.value.trim();
+      const file = fileInput.files[0] || null;
+      if (!text && !file) return;
+      if (!text && file) { alert("Add a short question about the image."); return; }
+
+      const dicom = file ? isDicomFile(file) : false;
+      const thumb = (file && !dicom) ? URL.createObjectURL(file) : null;
+      addUser(text || "(image)", thumb, dicom);
+      q.value = ""; autosize();
+      const captured = file; clearFile();
+      sendBtn.disabled = true;
+
+      const botTurn = addBot();
+      const t0 = performance.now();
+      try {
+        const jobId = await submitJob(text, captured);
+        let out;
+        try {
+          out = await streamResult(jobId, botTurn);      // live tokens
+        } catch (streamErr) {
+          out = await pollResult(jobId);                 // fallback: fetch final result
+        }
+        if (!out || !out.text) out = await pollResult(jobId);
+        fillBot(botTurn, out.text);
+        recordStats(out.stats, Math.round(performance.now() - t0), dept.value);
+      } catch (err) {
+        errorBot(botTurn, err.message || "Something went wrong.");
+      } finally {
+        sendBtn.disabled = false; q.focus();
+      }
+    });
+
+    /* ---- New chat ---- */
+    newchat.addEventListener("click", () => {
+      sessionStorage.setItem(CONV_KEY, crypto.randomUUID());
+      clearFile();
+      log.innerHTML = EMPTY_HTML;
+      q.value = ""; autosize(); q.focus();
+    });
+
+    /* ---- Response stats panel ---- */
+    const statsState = { n: 0, sumTps: 0, sumWall: 0, last: null };
+    function fmtMs(ms) { return ms >= 1000 ? (ms / 1000).toFixed(1) + " s" : Math.round(ms) + " ms"; }
+    function statRow(label, value) {
+      return '<div class="statrow"><span>' + label + '</span><span>' + value + '</span></div>';
+    }
+    function recordStats(stats, wallMs, domain) {
+      statsState.n++;
+      statsState.sumWall += wallMs || 0;
+      if (stats && stats.tokens_per_second) statsState.sumTps += stats.tokens_per_second;
+      statsState.last = { stats: stats || {}, wallMs: wallMs, domain: domain };
+      renderStats();
+    }
+    function renderStats() {
+      if (!statsState.n) { statsbody.innerHTML = statRow("No responses yet", ""); return; }
+      const L = statsState.last, s = L.stats || {};
+      const avgTps = statsState.sumTps ? statsState.sumTps / statsState.n : 0;
+      let html = statRow("Last response", fmtMs(L.wallMs));
+      if (s.tokens_per_second) html += statRow("Speed", s.tokens_per_second.toFixed(1) + " tok/s");
+      if (s.completion_tokens) html += statRow("Tokens out", s.completion_tokens);
+      if (s.inference_ms) html += statRow("Model time", fmtMs(s.inference_ms));
+      html += statRow("Department", L.domain);
+      html += statRow("Avg speed", avgTps ? avgTps.toFixed(1) + " tok/s" : "—");
+      html += statRow("Avg response", fmtMs(statsState.sumWall / statsState.n));
+      html += statRow("Responses", statsState.n);
+      statsbody.innerHTML = html;
+    }
+    statsBtn.addEventListener("click", () => {
+      const show = statspanel.hidden;
+      statspanel.hidden = !show;
+      statsBtn.setAttribute("aria-expanded", show ? "true" : "false");
+    });
+
+    /* ---- Model readiness: status dot + warmup progress bar ---- */
+    const EXPECTED_WARMUP_MS = 90000;
+    let modelReady = false, warmupStart = null;
+    function paintStatus(ready) {
+      if (ready) {
+        modelReady = true;
+        dotind.className = "dotind ready";
+        statustext.textContent = "Model ready";
+        progfill.style.width = "100%";
+        setTimeout(() => { progress.hidden = true; }, 800);
+      } else {
+        dotind.className = "dotind warm";
+        statustext.textContent = "Warming up MedGemma…";
+        progress.hidden = false;
+        if (!warmupStart) warmupStart = performance.now();
+        const pct = Math.min(95, ((performance.now() - warmupStart) / EXPECTED_WARMUP_MS) * 100);
+        progfill.style.width = pct.toFixed(0) + "%";
+      }
+    }
+    async function pollStatus() {
+      let ready = false;
+      try {
+        const r = await fetch(API + "/chat/api/status", { cache: "no-store" });
+        ready = !!(await r.json()).model_ready;
+      } catch { ready = false; }
+      paintStatus(ready);
+      setTimeout(pollStatus, ready ? 15000 : 1500);  // fast while warming, slow once ready
+    }
+    pollStatus();
+
+    q.focus();
+  </script>
+</body>
+</html>

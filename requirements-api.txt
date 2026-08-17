@@ -1,0 +1,16 @@
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+python-multipart==0.0.9
+pydantic-settings==2.4.0
+redis==5.0.8
+rq==1.16.2
+structlog==24.4.0
+filetype==1.2.0
+httpx==0.27.2
+# DICOM upload support: app/files.py transcodes .dcm → PNG on upload (API-side)
+Pillow==10.4.0
+numpy==2.5.1
+pydicom==3.0.2
+pylibjpeg==2.1.0
+pylibjpeg-libjpeg==2.4.0
+pylibjpeg-openjpeg==2.5.0

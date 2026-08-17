@@ -1,0 +1,27 @@
+{
+  "radiology": [
+    "What are the radiological signs of a tension pneumothorax?",
+    "What does the silhouette sign indicate on a chest radiograph?",
+    "List the cardinal radiographic features of lobar pneumonia."
+  ],
+  "dermatology": [
+    "What are the ABCDE criteria for evaluating a melanocytic lesion?",
+    "Describe the typical clinical presentation of basal cell carcinoma.",
+    "What features distinguish eczema from psoriasis on examination?"
+  ],
+  "pathology": [
+    "What histological features define a malignant tumour?",
+    "Describe the microscopic appearance of a caseating granuloma.",
+    "What is the characteristic histopathology of coeliac disease?"
+  ],
+  "ophthalmology": [
+    "What are the fundoscopic signs of diabetic retinopathy?",
+    "Describe the optic disc changes seen in glaucoma.",
+    "What is the classic presentation of central retinal artery occlusion?"
+  ],
+  "dentistry": [
+    "What are the radiographic signs of a periapical abscess?",
+    "Describe the clinical features of advanced periodontitis.",
+    "What distinguishes reversible from irreversible pulpitis?"
+  ]
+}
